@@ -1,0 +1,85 @@
+<div class="welcome">
+  <header class="topbar">
+    <a routerLink="/" class="brand" aria-label="BIAT, accueil">
+      <span class="brand-mark">
+        <svg width="26" height="26" viewBox="0 0 60 60" fill="none" aria-hidden="true">
+          <path d="M10 50L25 10L35 35L45 20L55 50Z" fill="#1A4F8A"/>
+          <path d="M10 50L25 10L35 35Z" fill="#009FC2" opacity=".75"/>
+        </svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">BIAT</span>
+        <span class="brand-sub">Innovation &amp; Technology</span>
+      </span>
+    </a>
+    <nav class="topnav" aria-label="Navigation principale">
+      <a routerLink="/" class="active">Accueil</a>
+      <a routerLink="/a-propos">À propos</a>
+      <a routerLink="/fonctionnalites">Fonctionnalités</a>
+      <a routerLink="/assistant">Assistant T24</a>
+    </nav>
+    <span class="lang" aria-label="Langue">FR</span>
+  </header>
+
+  <main class="hero" id="top">
+    <section class="hero-copy">
+      <span class="eyebrow">T24 Assistant</span>
+      <h1>
+        Votre accès intelligent à la
+        <span class="highlight">documentation T24</span>
+      </h1>
+      <p class="lead">
+        Une plateforme interne de BIAT IT pour consulter, rechercher et comprendre la documentation du système
+        Temenos T24 grâce à un assistant conversationnel.
+      </p>
+
+      <ul class="features" id="fonctionnalites" aria-label="Fonctionnalités">
+        <li class="feature">
+          <span class="feature-ico tone-blue" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          </span>
+          <span>
+            <strong>Recherche rapide</strong>
+            <small>Trouvez vos modules, tables et champs en quelques secondes.</small>
+          </span>
+        </li>
+        <li class="feature">
+          <span class="feature-ico tone-green" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </span>
+          <span>
+            <strong>Assistant dédié</strong>
+            <small>Posez vos questions en langage naturel.</small>
+          </span>
+        </li>
+        <li class="feature">
+          <span class="feature-ico tone-violet" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          </span>
+          <span>
+            <strong>Documentation officielle</strong>
+            <small>Basée sur la documentation T24 de notre environnement.</small>
+          </span>
+        </li>
+        <li class="feature" id="securite">
+          <span class="feature-ico tone-orange" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </span>
+          <span>
+            <strong>Accès sécurisé</strong>
+            <small>Réservé aux collaborateurs de BIAT IT.</small>
+          </span>
+        </li>
+      </ul>
+
+    </section>
+
+    <aside class="access" aria-label="Connexion">
+      <app-login [embedded]="true"></app-login>
+    </aside>
+  </main>
+
+  <footer class="welcome-footer" id="contact">
+    <span>BIAT IT — T24 Assistant · Système interne</span>
+  </footer>
+</div>

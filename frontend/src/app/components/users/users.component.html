@@ -1,0 +1,63 @@
+<section class="users-hero">
+  <div class="container">
+    <span class="tag">Réservé au Super Administrateur</span>
+    <h1 class="users-title">Utilisateurs</h1>
+    <p class="users-sub">Liste de tous les comptes de l'Assistant T24 ({{ users.length }} au total).</p>
+  </div>
+</section>
+
+<section class="users-content">
+  <div class="container">
+
+    <div class="users-toolbar" *ngIf="!loading && !error && users.length > 0">
+      <div class="users-search">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input class="users-search-input" type="text" placeholder="Rechercher un utilisateur ou un email..." [(ngModel)]="search" />
+      </div>
+      <button type="button" class="refresh-btn" (click)="load()" title="Rafraîchir">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      </button>
+    </div>
+
+    <div class="users-card">
+
+      <div class="users-loading" *ngIf="loading">Chargement des utilisateurs...</div>
+      <div class="alert alert-error" *ngIf="error && !loading">{{ error }}</div>
+
+      <table class="users-table" *ngIf="!loading && !error && filteredUsers.length > 0">
+        <thead>
+          <tr>
+            <th>Utilisateur</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>Statut</th>
+            <th>Créé le</th>
+            <th>Dernière activité</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of filteredUsers">
+            <td class="user-cell">
+              <span class="avatar">{{ u.username.charAt(0).toUpperCase() }}</span>
+              {{ u.username }}
+            </td>
+            <td>{{ u.email }}</td>
+            <td>{{ displayRole(u.role) }}</td>
+            <td>
+              <span class="status-chip" [class.active]="u.active">
+                <span class="dot"></span>{{ u.active ? 'Actif' : 'Désactivé' }}
+              </span>
+            </td>
+            <td>{{ formatDateTime(u.createdAt) }}</td>
+            <td>{{ formatDateTime(u.lastActivityAt) }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="users-empty" *ngIf="!loading && !error && filteredUsers.length === 0">
+        Aucun utilisateur ne correspond à cette recherche.
+      </div>
+    </div>
+
+  </div>
+</section>

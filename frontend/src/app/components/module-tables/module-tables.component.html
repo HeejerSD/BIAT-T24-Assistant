@@ -1,0 +1,49 @@
+<div class="mt-page">
+  <div class="container">
+
+    <div class="mt-header">
+      <h1 class="mt-title">Module <span class="highlight">{{ moduleName }}</span></h1>
+      <p class="mt-sub" *ngIf="!loading && !error">{{ tables.length }} table(s) disponible(s)</p>
+    </div>
+
+    <div class="mt-search" *ngIf="!loading && !error && tables.length > 0">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input
+        class="mt-search-input"
+        type="text"
+        placeholder="Rechercher une table..."
+        [(ngModel)]="tableSearch" />
+    </div>
+
+    <div class="mt-loading" *ngIf="loading">Chargement des tables...</div>
+    <div class="mt-error" *ngIf="error && !loading">{{ error }}</div>
+
+    <div class="mt-table-wrap" *ngIf="!loading && !error && tables.length > 0">
+      <table class="mt-table">
+        <thead>
+          <tr>
+            <th>Table T24</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of filteredTables" (click)="openTable(t)">
+            <td class="mt-table-name">{{ t.name }}</td>
+            <td class="mt-table-desc">
+              <span *ngIf="t.description">{{ t.description }}</span>
+              <span class="mt-no-cols" *ngIf="!t.description">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="mt-empty" *ngIf="filteredTables.length === 0">
+        Aucune table ne correspond à "{{ tableSearch }}".
+      </div>
+    </div>
+
+    <div class="mt-empty" *ngIf="!loading && !error && tables.length === 0">
+      Aucune table trouvée pour ce module.
+    </div>
+
+  </div>
+</div>

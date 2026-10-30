@@ -1,0 +1,554 @@
+﻿\documentclass[12pt,a4paper]{report}
+
+% ---------------------------------------------------------------------------
+% PACKAGES
+% ---------------------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2.5cm,headheight=14pt]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[colorlinks=true,linkcolor=biatblue,citecolor=biatblue,urlcolor=biatcyan,bookmarksopen=true]{hyperref}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{caption}
+\usepackage{parskip}
+\usepackage{ragged2e}
+
+% ---------------------------------------------------------------------------
+% COULEURS (identité BIAT)
+% ---------------------------------------------------------------------------
+\definecolor{biatblue}{HTML}{1A4F8A}
+\definecolor{biatbluedk}{HTML}{0F3760}
+\definecolor{biatcyan}{HTML}{009FC2}
+\definecolor{biattint}{HTML}{E8F1FA}
+\definecolor{linegray}{HTML}{D9E2EC}
+\definecolor{mutedgray}{HTML}{55677D}
+
+% ---------------------------------------------------------------------------
+% TITRES DE CHAPITRES / SECTIONS
+% ---------------------------------------------------------------------------
+\renewcommand{\thechapter}{\Roman{chapter}}
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\color{biatblue}}
+  {\Large\textcolor{biatcyan}{\ttfamily\MakeUppercase{Chapitre \thechapter}}}
+  {6pt}
+  {\Huge}
+\titlespacing*{\chapter}{0pt}{0pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{biatbluedk}}{\thesection}{8pt}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{biatbluedk}}{\thesubsection}{6pt}{}
+
+% ---------------------------------------------------------------------------
+% EN-TÊTES / PIEDS DE PAGE
+% ---------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{mutedgray}\slshape\leftmark}
+\fancyhead[R]{\small\color{mutedgray}Assistant T24 --- Rapport de stage}
+\fancyfoot[C]{\small\color{mutedgray}\thepage}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]{\small\color{mutedgray}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% ---------------------------------------------------------------------------
+% BOÎTES DE NOTE / CARTES "BUG"
+% ---------------------------------------------------------------------------
+\newtcolorbox{note}[1][]{%
+  enhanced, breakable,
+  colback=white, colframe=linegray, boxrule=0.4pt,
+  borderline west={2.5pt}{0pt}{biatcyan},
+  sharp corners=south, rounded corners=north,
+  boxsep=4pt, left=10pt,
+  before skip=10pt, after skip=10pt,
+  #1
+}
+\newtcolorbox{bugcard}[2][]{%
+  enhanced, breakable,
+  colback=white, colframe=linegray, boxrule=0.4pt,
+  title={\ttfamily\footnotesize\MakeUppercase{#2}},
+  coltitle=biatbluedk, colbacktitle=biattint,
+  fonttitle=\bfseries,
+  attach boxed title to top left={xshift=8pt,yshift=-2pt},
+  boxed title style={boxrule=0pt, colframe=biattint, sharp corners},
+  before skip=10pt, after skip=10pt, top=14pt,
+  #1
+}
+
+% ---------------------------------------------------------------------------
+% RACCOURCIS
+% ---------------------------------------------------------------------------
+\newcommand{\code}[1]{\texttt{\color{biatbluedk}#1}}
+\newcommand{\model}[1]{\begin{center}\ttfamily\color{biatbluedk}#1\end{center}}
+\newcommand{\ph}[1]{\textit{\color{mutedgray}[#1]}}
+
+\captionsetup{font=small,labelfont={bf,color=biatblue},labelsep=colon}
+
+% ---------------------------------------------------------------------------
+% LOGO AVEC REPLI GRACIEUX : si le fichier n'existe pas encore (voir logos/README),
+% affiche un encadré texte à la place plutôt que d'échouer la compilation.
+% ---------------------------------------------------------------------------
+\newcommand{\logoOrPlaceholder}[3]{%
+  \IfFileExists{#1.png}{\includegraphics[height=#3]{#1.png}}{%
+  \IfFileExists{#1.jpg}{\includegraphics[height=#3]{#1.jpg}}{%
+  \IfFileExists{#1.jpeg}{\includegraphics[height=#3]{#1.jpeg}}{%
+  \IfFileExists{#1.pdf}{\includegraphics[height=#3]{#1.pdf}}{%
+  \fbox{\parbox[c][#3][c]{3.4cm}{\centering\footnotesize\ttfamily\color{mutedgray} #2}}%
+  }}}}%
+}
+
+% ===========================================================================
+\begin{document}
+
+% ---------------------------------------------------------------------------
+% PAGE DE GARDE
+% ---------------------------------------------------------------------------
+\begin{titlepage}
+  \centering
+  \vspace*{0.5cm}
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \logoOrPlaceholder{logos/biat-it-logo}{Logo BIAT IT}{2.6cm}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \logoOrPlaceholder{logos/esprit-logo}{Logo ESPRIT}{1.6cm}
+  \end{minipage}
+
+  \vspace{2.2cm}
+  {\ttfamily\large\color{biatcyan}\MakeUppercase{Rapport de stage}}\\[0.6cm]
+  {\Huge\bfseries\color{biatblue} Assistant conversationnel intelligent\\[2pt] pour la documentation Temenos T24}\\[0.8cm]
+  {\Large\itshape\color{mutedgray} Conception et mise en œuvre d'un système de génération\\ augmentée par récupération (RAG)}
+
+  \vspace{2cm}
+  \renewcommand{\arraystretch}{1.6}
+  \begin{tabular}{@{}m{4.2cm}m{9cm}@{}}
+    \ttfamily\footnotesize\color{mutedgray} ÉTUDIANT·E & Hejer Sodrati \\
+    \ttfamily\footnotesize\color{mutedgray} ÉTABLISSEMENT & ESPRIT --- École Supérieure Privée d'Ingénierie et de Technologies \\
+    \ttfamily\footnotesize\color{mutedgray} ORGANISME D'ACCUEIL & BIAT --- Direction Innovation \& Technologie (BIAT IT) \\
+    \ttfamily\footnotesize\color{mutedgray} ENCADRANT BIAT IT & Haithem Mathlouthi \\
+    \ttfamily\footnotesize\color{mutedgray} ENCADRANT ACADÉMIQUE & \ph{Nom de l'encadrant} \\
+    \ttfamily\footnotesize\color{mutedgray} PÉRIODE DE STAGE & 6 semaines \\
+    \ttfamily\footnotesize\color{mutedgray} ANNÉE UNIVERSITAIRE & 2025 - 2026 \\
+  \end{tabular}
+
+  \vfill
+  {\small\color{mutedgray} Rapport présenté en vue de la soutenance de stage}
+  \vspace{1cm}
+\end{titlepage}
+
+\pagenumbering{roman}
+
+\chapter*{Remerciements}
+\addcontentsline{toc}{chapter}{Remerciements}
+
+Je tiens tout d'abord à exprimer ma sincère gratitude à Monsieur \textbf{Haithem Mathlouthi}, mon encadrant au sein de BIAT~IT, pour son accueil, sa disponibilité et ses conseils précieux tout au long de ce stage, ainsi que pour le temps qu'il a consacré à répondre à mes questions et à orienter mon travail.
+
+Je remercie également \ph{Nom de l'encadrant académique}, mon encadrant à l'ESPRIT, pour son suivi et ses remarques constructives qui ont contribué à la qualité de ce travail.
+
+Mes remerciements s'adressent aussi à l'ensemble de l'équipe BIAT~IT pour son accueil chaleureux et son esprit collaboratif, qui ont rendu cette expérience aussi enrichissante sur le plan humain que technique.
+
+Enfin, je remercie les membres du jury pour l'intérêt qu'ils portent à ce travail en acceptant de l'évaluer.
+
+\chapter*{Résumé}
+Ce rapport présente la conception et la réalisation, durant un stage de fin d'études effectué à BIAT~IT, d'un assistant conversationnel destiné à interroger en langage naturel la documentation du cœur bancaire Temenos~T24. Le système repose sur une architecture de génération augmentée par récupération (\emph{Retrieval-Augmented Generation}, RAG)~: les descriptions de champs et de tables T24, importées depuis les fichiers HelpText XML source, sont vectorisées et indexées avec FAISS, retrouvées par une recherche hybride combinant correspondance exacte, similarité dense et reranking par cross-encoder, puis reformulées en français par un modèle de langage exécuté localement (Ollama), sous le contrôle de garde-fous déterministes empêchant toute invention de nom de table ou de champ. L'ensemble est exposé par une API Spring~Boot sécurisée par JWT et consommé par une interface Angular.
+
+\vspace{1em}
+\noindent\textbf{Mots-clés~:} RAG, recherche vectorielle, FAISS, embedding, reranking, query rewriting, Temenos T24, Spring Boot, Angular, LLM local.
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\pagenumbering{arabic}
+
+% ===========================================================================
+\chapter*{Introduction générale}
+\addcontentsline{toc}{chapter}{Introduction générale}
+\markboth{Introduction générale}{}
+
+La banque BIAT exploite Temenos~T24 comme cœur bancaire (\emph{core banking system})~: plusieurs centaines de tables réparties en dizaines de modules fonctionnels (comptes, prêts, lettres de crédit, guichet, banque électronique, etc.), chacune documentée par un fichier HelpText XML propre à Temenos, dense et rédigé en anglais technique. Retrouver « quel champ porte la devise d'un compte » ou « quelle table gère les versions d'écran de la \emph{Home Page Teller} » suppose aujourd'hui de connaître déjà la documentation, ou de la parcourir manuellement table par table.
+
+L'objet de ce stage est de concevoir et réaliser un assistant conversationnel capable de répondre à ce type de question en langage naturel, en français, en s'appuyant strictement sur la documentation officielle T24 déjà importée en base --- jamais sur une connaissance générale non vérifiable pour ce niveau de détail. L'approche retenue est celle d'un système RAG~: un moteur de recherche documentaire retrouve les passages pertinents, et un modèle de langage local les reformule en réponse compréhensible, sans jamais inventer un nom de table ou de champ absent du contexte retrouvé.
+
+Ce rapport présente successivement le contexte et la problématique (chapitre~\ref{ch:contexte}), la conception générale du système --- architecture, choix technologiques, modèle de données (chapitre~\ref{ch:conception}) ---, le fonctionnement détaillé du pipeline RAG et de ses méthodes d'amélioration de la pertinence (chapitre~\ref{ch:rag}), la réalisation technique du backend, du frontend et du microservice de recherche vectorielle (chapitre~\ref{ch:realisation}), la démarche de fiabilisation itérative suivie durant le stage (chapitre~\ref{ch:qualite}), puis quelques résultats obtenus (chapitre~\ref{ch:resultats}), avant de conclure sur les perspectives d'évolution.
+
+% ===========================================================================
+\chapter{Contexte et étude de l'existant}
+\label{ch:contexte}
+
+\section{L'organisme d'accueil}
+Le stage s'est déroulé au sein de \textbf{BIAT~IT}, la structure informatique de la Banque Internationale Arabe de Tunisie (BIAT), en charge notamment de l'exploitation et du support du système Temenos~T24 pour l'ensemble des métiers de la banque. \ph{Compléter ici~: équipe d'accueil, missions du service, organisation.}
+
+\section{Le cœur bancaire Temenos~T24}
+T24 (aujourd'hui commercialisé sous le nom Temenos~Transact) organise ses données en \emph{modules} fonctionnels identifiés par un code court (deux à trois lettres), chacun regroupant un ensemble de \emph{tables} (appelées historiquement \emph{fichiers} ou \emph{applications} T24). Chaque table possède ses propres \emph{champs} (colonnes), typés, éventuellement obligatoires, et documentés dans un fichier HelpText XML livré par Temenos~: une balise par champ, avec sa description narrative en anglais, ses règles de validation, et, lorsqu'elle existe, une description d'ensemble de la table (balise \code{<ovdesc>}).
+
+Le périmètre fonctionnel retenu pour ce projet regroupe sept modules jugés prioritaires par BIAT~IT~:
+
+\begin{table}[h]
+\centering
+\caption{Modules actifs exposés dans l'assistant (les autres modules restent importés en base mais ne sont ni proposés, ni indexés pour la recherche vectorielle globale).}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Code} & \textbf{Libellé officiel} & \textbf{Domaine} \\
+\midrule
+\code{AC} & Account & Gestion des comptes clients et internes \\
+\code{LD} & Lending & Prêts et financements \\
+\code{TT} & Teller & Opérations de guichet \\
+\code{LC} & Letters of Credit & Lettres de crédit et collections documentaires \\
+\code{EB} & Electronic Banking & Banque électronique \\
+\code{DE} & Delivery & Formatage et acheminement des messages sortants/entrants (SWIFT, Telex, etc.) \\
+\code{MD} & Misc.\ Deals & Opérations diverses de marché (deals) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Problématique}
+Trois difficultés concrètes ont motivé le projet~:
+\begin{itemize}
+  \item \textbf{Volume et dispersion.} Plusieurs milliers de champs répartis sur plusieurs centaines de tables~: aucun collaborateur ne peut mémoriser l'intégralité de cette documentation.
+  \item \textbf{Barrière de la langue.} Le HelpText source est en anglais technique T24, alors que les équipes métier BIAT échangent en français.
+  \item \textbf{Ambiguïté du langage naturel.} Un même mot (\code{ACCOUNT}, \code{CURRENCY}) peut désigner à la fois le nom d'une table entière et le nom d'une colonne présente dans des dizaines d'autres tables sans rapport --- une simple recherche par mot-clé produit alors des réponses trompeuses si elle n'est pas désambiguïsée.
+\end{itemize}
+
+\section{Solution retenue}
+Plutôt qu'un moteur de recherche plein-texte classique (qui ne comprend pas la question) ou un grand modèle de langage généraliste utilisé seul (qui inventerait des noms de champs plausibles mais faux), la solution retenue combine les deux~: une recherche documentaire précise dans la base déjà importée, puis une synthèse en langage naturel strictement bornée à ce que cette recherche a réellement retrouvé. C'est l'architecture \textbf{RAG}, détaillée au chapitre~\ref{ch:rag}, choisie précisément parce qu'elle permet de vérifier et de citer la source de chaque affirmation plutôt que de faire confiance à la seule mémoire paramétrique du modèle.
+
+% ===========================================================================
+\chapter{Conception générale}
+\label{ch:conception}
+
+\section{Architecture globale}
+Le système est découpé en quatre composants indépendants, chacun responsable d'une seule préoccupation~: une interface web (Angular), une API applicative (Spring~Boot), un microservice de recherche vectorielle (Python/FAISS), et un moteur de génération de texte (Ollama, exécuté localement). La base de données Oracle est la source de vérité unique~: le microservice FAISS ne fait que rejouer, sous forme de vecteurs, ce qui est déjà persistant côté relationnel.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  node distance=1.1cm,
+  box/.style={draw, rounded corners, minimum width=3.1cm, minimum height=1.3cm, align=center, font=\footnotesize\ttfamily},
+  lbl/.style={font=\scriptsize, midway, above, sloped}
+]
+  \node[box] (browser) {Navigateur\\\tiny utilisateur BIAT};
+  \node[box, right=2.4cm of browser] (frontend) {Frontend\\\tiny Angular 17 (SPA)};
+  \node[box, above right=0.6cm and 2.6cm of frontend] (oracle) {Oracle DB\\\tiny schéma relationnel};
+  \node[box, right=2.6cm of frontend] (backend) {Backend\\\tiny Spring Boot (API REST)};
+  \node[box, below right=0.6cm and 2.6cm of frontend] (ollama) {Ollama\\\tiny LLM local llama3.2:3b};
+  \node[box, right=2.4cm of backend] (faiss) {FAISS\\\tiny microservice Python};
+
+  \draw[-{Latex}] (browser) -- (frontend) node[lbl] {HTTPS $\cdot$ JWT};
+  \draw[-{Latex}] (frontend) -- (backend) node[lbl] {REST};
+  \draw[-{Latex}] (backend) -- (oracle) node[lbl] {JDBC};
+  \draw[-{Latex}] (backend) -- (ollama) node[lbl] {REST $\cdot$ génération};
+  \draw[-{Latex}] (backend) -- (faiss) node[lbl] {embed / search / rerank};
+\end{tikzpicture}
+\caption{Vue d'ensemble de l'architecture~: le backend Spring Boot est l'unique point de contact du frontend et le seul composant à parler aux trois systèmes de données (Oracle, FAISS, Ollama).}
+\end{figure}
+
+\section{Choix technologiques et justifications}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Synthèse des choix de langages et de frameworks, retenus pour leur adéquation à un environnement bancaire déjà outillé en Java/Oracle.}
+\begin{tabular}{@{}p{2.1cm}p{3.6cm}p{7cm}@{}}
+\toprule
+\textbf{Couche} & \textbf{Choix} & \textbf{Justification} \\
+\midrule
+Backend & Java~21, Spring~Boot~3.2.0, Maven & Écosystème déjà maîtrisé par BIAT~IT~; typage fort et Spring Security réduisent les risques d'erreur sur un domaine bancaire sensible. \\
+Persistance & Oracle Database (\code{ojdbc11}), Hibernate/JPA & SGBD déjà en production à la BIAT~; source de vérité unique, y compris pour les vecteurs sérialisés. \\
+Sécurité & Spring Security, JWT (\code{jjwt} 0.12.6) & Authentification sans état adaptée à une API consommée par une SPA~; rôles portés dans le jeton. \\
+Frontend & Angular~17 (composants \emph{standalone}), TypeScript~5.2 & Typage statique, structuration en composants/services, écosystème déjà utilisé par la DSI. \\
+Recherche vectorielle & Python, FastAPI, \code{faiss-cpu}, \code{sentence-transformers} & FAISS (Meta AI) est la référence open-source pour la recherche par similarité~; l'écosystème Hugging~Face concentre les modèles multilingues réutilisables. \\
+Génération de texte & Ollama, \code{llama3.2:3b} & Exécution locale (aucune donnée métier envoyée à un tiers) sur poste sans GPU dédié. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{note}
+\textbf{\color{biatcyan}\ttfamily\footnotesize CHOIX ASSUMÉ --- PAS DE FINE-TUNING}\\[4pt]
+Le modèle de langage n'a pas été ré-entraîné (pas de fine-tuning, pas de LoRA)~: cette voie aurait exigé un jeu de données annoté et des ressources GPU indisponibles dans le cadre du stage. L'amélioration de la pertinence des réponses repose entièrement sur des techniques de \emph{retrieval} et de \emph{prompting} --- recherche hybride, reranking, reformulation de requête, garde-fous déterministes post-génération --- détaillées au chapitre~\ref{ch:rag}. Ce choix est cohérent avec le contexte~: ces techniques ne demandent aucune donnée d'entraînement supplémentaire et restent auditables, un point important pour une application bancaire.
+\end{note}
+
+\section{Conception de la base de données}
+Le modèle relationnel part directement de la structure des fichiers HelpText T24~: un module contient des tables, une table contient des champs, chaque champ devenant l'unité indexable pour la recherche (un \emph{chunk}, au sens RAG). Une table sans description de champ conserve malgré tout une ligne « vue d'ensemble » dédiée (marquée par la constante \code{\_\_TABLE\_OVERVIEW\_\_}) afin qu'une question portant sur la table elle-même --- et non sur un champ précis --- dispose elle aussi d'un passage indexable.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  node distance=1cm,
+  ent/.style={draw, rounded corners, minimum width=3cm, minimum height=1.1cm, align=center, font=\footnotesize\ttfamily},
+  lbl/.style={font=\scriptsize, midway, above}
+]
+  \node[ent] (module) {MODULE\_T24\\\tiny code, libellé};
+  \node[ent, right=2.2cm of module] (table) {TABLE\_T24\\\tiny nom, description};
+  \node[ent, right=2.2cm of table] (doc) {DOCUMENT\\\tiny champ, contenu, embedding};
+  \node[ent, below=1.4cm of module] (user) {APP\_USER\\\tiny rôle, identifiants};
+  \node[ent, right=2.2cm of user] (chat) {CHAT\\\tiny conversation};
+  \node[ent, right=2.2cm of chat] (hist) {CHAT\_HISTORY\\\tiny message, source JSON};
+  \node[ent, below=1.4cm of user] (reset) {PASSWORD\_RESET\_REQUEST\\\tiny demande, statut};
+
+  \draw[-{Latex}] (module) -- (table) node[lbl] {1---N};
+  \draw[-{Latex}] (table) -- (doc) node[lbl] {1---N};
+  \draw[-{Latex}] (user) -- (chat) node[lbl] {1---N};
+  \draw[-{Latex}] (chat) -- (hist) node[lbl] {1---N};
+  \draw[-{Latex}] (user) -- (reset) node[lbl] {1---N};
+\end{tikzpicture}
+\caption{Schéma relationnel simplifié --- le vecteur d'embedding est persisté dans \code{DOCUMENT.embedding} (JSON), en plus d'être poussé vers l'index FAISS correspondant~; \code{CHAT\_HISTORY.source\_columns} conserve la source de chaque réponse pour survivre à un rafraîchissement de page.}
+\end{figure}
+
+\begin{description}[leftmargin=3.2cm, style=nextline]
+  \item[\code{MODULE\_T24}] Représente un module fonctionnel du système T24, identifié par un code court de deux ou trois lettres (\code{NOM\_MODULE}) et associé à un libellé officiel issu de la documentation Temenos (\code{LABEL}).
+
+  \item[\code{TABLE\_T24}] Représente une table fonctionnelle du système T24, correspondant à un fichier XML de la documentation technique (\code{DATA}). Elle contient les informations générales relatives à la table (\code{NOM\_TABLE}, \code{DESCRIPTION}), sa traduction française mise en cache (\code{DESCRIPTION\_FR}), ainsi que son rattachement à un module (\code{MODULE\_ID}).
+
+  \item[\code{DOCUMENT}] Représente une unité documentaire issue d'une table T24, correspondant à la description d'un champ (\code{COLUMN\_NAME}) ou à la vue d'ensemble de la table. Son contenu textuel (\code{CONTENT}) est utilisé pour la recherche documentaire ; son vecteur d'embedding est conservé dans \code{EMBEDDING}, et sa traduction française dans \code{DESCRIPTION\_FR}.
+
+  \item[\code{APP\_USER}] Représente un compte utilisateur de l'application. Cette entité contient les informations nécessaires à l'authentification (\code{USERNAME}, \code{PASSWORD}, \code{EMAIL}) ainsi que le rôle attribué à l'utilisateur (\code{ROLE}, \code{superAdmin} ou \code{consultant}) et son état d'activation (\code{IS\_ACTIVE}).
+
+  \item[\code{CHAT}] Représente une conversation créée par un utilisateur avec l'assistant intelligent (\code{USERNAME}, \code{TITLE}). Elle peut être épinglée (\code{PINNED}) pour un accès rapide depuis l'historique.
+
+  \item[\code{CHAT\_HISTORY}] Représente les messages et les réponses enregistrés dans le cadre d'une conversation (\code{CHAT\_ID}, \code{MESSAGE\_TYPE}, \code{CONTENT}). Cette entité assure la conservation de l'historique des échanges ainsi que des informations structurées relatives aux sources utilisées pour générer les réponses (\code{SOURCE\_COLUMNS}).
+
+  \item[\code{PASSWORD\_RESET\_REQUEST}] Représente une demande de réinitialisation de mot de passe (\code{USERNAME}), avec son état de traitement (\code{RESOLVED}, \code{RESOLVED\_AT}, \code{RESOLVED\_BY}).
+\end{description}
+
+\section{Sécurité et gestion des rôles}
+L'authentification repose sur un jeton JWT signé (bibliothèque \code{jjwt}), transmis dans l'en-tête \code{Authorization} de chaque requête. Deux rôles sont distingués~: \code{consultant} (usage du chat, historique personnel) et \code{superAdmin} (administration des comptes, ré-indexation, visibilité sur l'ensemble des conversations à des fins de support). Les mots de passe ne sont jamais stockés en clair (hachage \code{PasswordEncoder} de Spring Security).
+
+% ===========================================================================
+\chapter{Le pipeline RAG, de la question à la réponse sourcée}
+\label{ch:rag}
+
+Cette section détaille, dans l'ordre où elles s'exécutent réellement, les étapes traversées par une question utilisateur.
+
+\section{Import et indexation depuis les fichiers HelpText}
+Chaque table T24 est livrée sous la forme d'un fichier XML HelpText. Le service d'import (\code{T24ImportService}) parcourt l'arborescence, extrait pour chaque table sa description d'ensemble (balises \code{<overview>/<ovdesc>}) puis, pour chaque champ, son nom, son type, son caractère obligatoire déclaré et sa description narrative --- deux formats d'export XML coexistant dans la documentation source ont dû être pris en charge. Le résultat alimente \code{TABLE\_T24} puis \code{DOCUMENT} (une ligne par champ, plus une ligne « vue d'ensemble » par table).
+
+\section{Embedding --- transformer le texte en vecteur}
+Chaque ligne \code{DOCUMENT} est mise en forme selon un gabarit texte homogène (\emph{Module~: \dots\ / Table~: \dots\ / Colonne~: \dots\ / Type~: \dots\ / Obligatoire~: \dots\ / Description~: \dots}), puis envoyée au microservice FAISS pour être transformée en vecteur numérique par un modèle d'embedding de phrases~:
+
+\model{sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2}
+
+Ce modèle, multilingue (dont français/anglais), produit des vecteurs de dimension~384~: deux textes proches de sens --- même écrits dans des langues ou des formulations différentes --- obtiennent des vecteurs proches selon la similarité cosinus. C'est ce qui permet à une question posée en français de retrouver un champ documenté en anglais. Le vecteur est à la fois persisté en base (colonne \code{DOCUMENT.embedding}, JSON) et poussé vers l'index FAISS correspondant --- la base Oracle reste la source de vérité, l'index FAISS pouvant toujours être reconstruit à partir d'elle (mécanisme de \emph{backfill} utilisé notamment après un redémarrage du microservice).
+
+\section{FAISS et l'organisation en scopes}
+\textbf{FAISS} (\emph{Facebook AI Similarity Search}) est la bibliothèque retenue pour la recherche par similarité vectorielle. Chaque vecteur est normalisé (norme~L2) puis inséré dans un index \code{IndexFlatIP} (produit scalaire) encapsulé par un \code{IndexIDMap} --- la normalisation préalable rend ce produit scalaire mathématiquement équivalent à une similarité cosinus, tout en restant l'opération la plus rapide que FAISS sait exécuter. Plutôt qu'un unique index global, le système maintient \textbf{un index par périmètre}~:
+
+\begin{itemize}
+  \item un index par \textbf{table} (recherche la plus précise, utilisée dès qu'une table est explicitement sélectionnée)~;
+  \item un index par \textbf{module} (question posée sans table précise, mais module choisi)~;
+  \item un index \textbf{global}, volontairement restreint aux sept modules actifs (\S~1.2), pour garder un temps de recherche maîtrisé malgré plusieurs centaines de milliers de vecteurs au total tous modules confondus.
+\end{itemize}
+
+Chaque index est persisté sur disque (\code{index.faiss} + \code{meta.json}) par périmètre, ce qui permet au microservice de recharger son état sans tout ré-embarquer depuis la base à chaque démarrage.
+
+\section{Retrieval hybride et court-circuit exact}
+Avant même de solliciter un calcul vectoriel, la question est comparée directement aux noms réels de tables et de colonnes en base (recherche exacte, insensible à la casse, tolérante aux fautes de frappe par distance de Levenshtein). Cette étape est déterminante~: si l'utilisateur nomme précisément un champ (\code{SWIFT.CODE}) ou une table, la bonne réponse est retrouvée instantanément, sans appel au modèle de langage --- plus rapide et strictement fiable. Ce n'est que si aucune correspondance exacte n'existe que la recherche \textbf{hybride} prend le relais~: les candidats de la recherche vectorielle dense (FAISS) sont complétés par une correspondance lexicale sur le corpus du périmètre (approche de type BM25), afin de repêcher un terme technique rare que l'embedding généraliste représenterait mal.
+
+\begin{note}
+\textbf{\color{biatcyan}\ttfamily\footnotesize UN PIÈGE CONCRET RENCONTRÉ EN BASE}\\[4pt]
+Le mot \code{ACCOUNT} est à la fois le nom exact de la table maîtresse des comptes \emph{et} le nom d'une colonne ordinaire présente dans près d'une centaine d'autres tables T24 (référence de compte). Une correspondance exacte non désambiguïsée répondait alors, au hasard, avec la description d'une colonne sans rapport. La règle retenue~: la priorité « nom de table exact » n'est appliquée que lorsque le mot constitue l'essentiel du contenu réel de la question (après filtrage des mots grammaticaux) --- une question plus longue et descriptive continue d'utiliser la recherche sémantique normale plutôt que de se fier à une coïncidence de nom.
+\end{note}
+
+\section{Reranking par cross-encoder}
+La similarité cosinus compare deux vecteurs calculés \emph{indépendamment} (la question, puis chaque candidat) et ne capture qu'imparfaitement la pertinence réelle d'une paire question/passage. Un second modèle, un \emph{cross-encoder}, réévalue conjointement chaque paire (question, candidat) après la recherche dense~:
+
+\model{cross-encoder/mmarco-mMiniLMv2-L12-H384-v1}
+
+Le pipeline retenu est donc du type \emph{retrieve-then-rerank}~: FAISS présélectionne un lot plus large que le nombre final de résultats souhaité (typiquement quatre fois plus, quinze au minimum), afin que le cross-encoder ait de vrais candidats à départager plutôt que de simplement réordonner un lot déjà trop restreint. Le score cosinus d'origine est conservé pour le seuillage de confiance~; seul l'\emph{ordre} des candidats change après reranking.
+
+\section{Query rewriting --- reformuler sans altérer}
+Une question de suivi elliptique (« et il est obligatoire~? », « et pour LD~? ») ne contient, prise isolément, aucun terme permettant de la retrouver dans la documentation. Une reformulation par LLM (température~0, pour un résultat déterministe) résout ces références à partir du seul dernier échange de la conversation, produisant une requête de recherche autonome (par exemple \code{MIN.COMM.AMT.LCCY appartient à quelle table?}) --- \textbf{uniquement pour la recherche}, jamais pour le texte de la réponse finale, qui reste fondé sur la question réellement posée par l'utilisateur.
+
+Cette reformulation reste risquée si elle n'est pas contrôlée~: un modèle de cette taille peut, en réécrivant, altérer l'orthographe d'un identifiant déjà présent dans la question (observé en pratique~: \code{ACCOUNT.CLOSURE} transformé en \code{AC.CLOSURE}) ou introduire un identifiant venu à tort de l'historique. Une vérification déterministe après coup (fonction \code{isSafeRewrite}) rejette toute reformulation qui modifierait un identifiant déjà présent dans la question d'origine, ou qui en introduirait un nouveau non justifié par une référence explicite (« il », « cette table », etc.) --- dans ce cas, la question d'origine est utilisée sans changement.
+
+\section{Génération de la réponse et garde-fous déterministes}
+Le contexte retrouvé (un ou plusieurs blocs \emph{Module / Table / Colonne / Description}) est transmis à Ollama avec une instruction système détaillée~: ne jamais inventer un nom absent du contexte, justifier la réponse à partir de la Description retrouvée (pas seulement nommer le champ), traduire systématiquement les termes métier anglais, distinguer une table d'un champ, présenter explicitement \emph{toutes} les possibilités quand plusieurs champs distincts répondent à la même question plutôt que d'en choisir une silencieusement, signaler un changement de sujet par rapport à l'échange précédent, etc.
+
+Parce qu'un modèle de 3~milliards de paramètres exécuté sur CPU reste faillible, chaque réponse générée est \textbf{revérifiée par du code déterministe} avant d'être affichée --- l'instruction seule ne suffit jamais à garantir le résultat~:
+
+\begin{table}[h]
+\centering
+\small
+\caption{Garde-fous appliqués après génération, chacun avec une nouvelle tentative ou une correction automatique en cas d'échec.}
+\begin{tabular}{@{}p{4.2cm}p{8.4cm}@{}}
+\toprule
+\textbf{Garde-fou} & \textbf{Rôle} \\
+\midrule
+\code{citesOnlyContextIdentifiers} & Rejette une réponse qui désigne comme sujet un champ ou une table absent des passages réellement retrouvés (tolère un préfixe de module redondant, ex.\ \code{AC.ACCOUNT} pour la table \code{ACCOUNT}). \\
+\code{MandatoryClassifier} & Reclasse « Obligatoire / Optionnel » à partir du texte de la Description à chaque affichage, plutôt que de faire confiance à une valeur mise en cache. \\
+\code{ensureGroundedOpening} & Garantit qu'une réponse issue du contexte annonce toujours explicitement sa source (« Selon la documentation T24, \dots »). \\
+\code{isTooTerseForNamingQuestion} & Détecte une réponse réduite au seul nom d'un champ pour une question du type « quel champ permet de\dots » et déclenche une nouvelle tentative de génération, plus étoffée. \\
+Vérification d'existence préalable & Avant toute recherche, vérifie en base qu'un identifiant nommément cité existe réellement comme table ou colonne --- sinon répond immédiatement « introuvable », sans jamais solliciter le LLM sur un nom inventé. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  node distance=0.8cm,
+  box/.style={draw, rounded corners, minimum width=4.4cm, minimum height=1cm, align=center, font=\footnotesize\ttfamily},
+  lbl/.style={font=\scriptsize}
+]
+  \node[box] (q) {Question utilisateur};
+  \node[box, below=of q] (exist) {Identifiant cité existe-t-il ?};
+  \node[box, below left=1cm and 1.4cm of exist] (notfound) {Non trouvé\\\tiny (0 appel LLM)};
+  \node[box, below right=1cm and 1.4cm of exist] (rewrite) {Reformulation\\\tiny (query rewriting)};
+  \node[box, below=of rewrite] (search) {Recherche hybride\\\tiny FAISS + BM25};
+  \node[box, below=of search] (rerank) {Reranking\\\tiny cross-encoder};
+  \node[box, below=of rerank] (gen) {Génération\\\tiny + garde-fous};
+  \node[box, below left=1.2cm and 1.4cm of gen] (answer) {Réponse + carte source};
+
+  \draw[-{Latex}] (q) -- (exist);
+  \draw[-{Latex}] (exist) -- (notfound) node[lbl, midway, above, sloped] {non};
+  \draw[-{Latex}] (exist) -- (rewrite) node[lbl, midway, above, sloped] {oui};
+  \draw[-{Latex}] (rewrite) -- (search);
+  \draw[-{Latex}] (search) -- (rerank);
+  \draw[-{Latex}] (rerank) -- (gen);
+  \draw[-{Latex}] (gen) -- (answer);
+  \draw[-{Latex}] (notfound) |- (answer);
+\end{tikzpicture}
+\caption{Trajet complet d'une question~: la branche de gauche répond immédiatement « introuvable » sans jamais engager de calcul coûteux, dès qu'un identifiant nommé n'existe réellement pas en base.}
+\end{figure}
+
+\section{Traçabilité --- le bouton « Voir la source »}
+Pour qu'un utilisateur puisse vérifier lui-même la fiabilité d'une réponse --- et non se contenter d'y faire confiance ---, chaque réponse fondée sur la documentation porte une \emph{source structurée} (table, champ, description, caractère obligatoire, règle de validation), affichée sous forme de carte dépliable. Cette source ne montre que ce que la question a effectivement demandé~: la description n'apparaît qu'accompagnée du texte source complet permettant de la vérifier~; le caractère « Obligatoire » ou la règle de validation ne s'affichent que si la question portait explicitement sur cet aspect. Elle est persistée (colonne JSON \code{CHAT\_HISTORY.source\_columns}) afin de rester disponible après un rafraîchissement de la page ou un changement de conversation.
+
+% ===========================================================================
+\chapter{Réalisation technique}
+\label{ch:realisation}
+
+\section{Backend --- Spring Boot}
+Le backend expose une API REST organisée en couches classiques~: \emph{contrôleurs} (\code{ChatController}, \code{AuthController}, \code{T24ImportController}\dots), \emph{services} métier (\code{AnswerServiceImpl} pour la génération, \code{RetrieverServiceImpl} pour la recherche, \code{DocumentServiceImpl} pour l'indexation), \emph{repositories} Spring Data JPA, et \emph{modèles} entités JPA mappées sur Oracle. La conversation se déroule en flux continu~: l'endpoint \code{/api/chat/stream} répond en \emph{Server-Sent Events}, chaque fragment de texte généré par le modèle étant transmis dès sa production plutôt que d'attendre la réponse complète --- un choix important sur un modèle exécuté en CPU, où une réponse complète peut prendre plusieurs secondes.
+
+Une tâche de fond au démarrage (\code{StartupReindexRunner}) vérifie et complète l'indexation (nouvelles tables importées, traductions françaises manquantes, chunks de vue d'ensemble absents), en donnant la priorité aux sept modules actifs.
+
+\section{Frontend --- Angular}
+L'interface est une application monopage (SPA) construite avec des composants Angular \emph{standalone} (sans module \code{NgModule} intermédiaire). Le composant central (\code{ChatComponent}) gère~: le dialogue guidé de sélection de module (bulles cliquables restreintes aux sept modules actifs), l'affichage progressif de la réponse en flux, l'historique des conversations (recherche, épinglage), le panneau « Voir la source », et une mise en page \emph{responsive} (la barre latérale devient un panneau en recouvrement sous 768~px, pour ne jamais repousser la zone de conversation hors de l'écran visible).
+
+\section{Microservice FAISS --- Python / FastAPI}
+Le microservice expose une API HTTP minimale~: \code{/embed} (vectorisation d'un lot de textes), \code{/rerank} (réordonnancement par cross-encoder), et, par périmètre, \code{/indices/\{scope\}/upsert}, \code{/\dots/search}, \code{/\dots/delete}. Les modèles Hugging~Face (embedding et reranking) sont chargés une seule fois au démarrage du processus, jamais recalculés par requête.
+
+\section{Consultation documentaire par module et par table}
+En complément du chat conversationnel, l'application propose une consultation directe et structurée de la documentation T24, sans passer par le RAG ni par le LLM au moment de la lecture~: l'utilisateur choisit un module puis une table (composants Angular \code{ModuleTablesComponent} et \code{TableDetailComponent}), et consulte la liste de ses champs avec leur description --- utile pour parcourir une table déjà connue sans avoir à formuler une question.
+
+Ces descriptions, extraites en anglais du HelpText source, sont traduites en français par le même modèle de langage local (Ollama) que celui utilisé pour la génération de réponses --- mais cette traduction est calculée \textbf{une seule fois}, en tâche de fond au démarrage du backend (\code{StartupReindexRunner}), puis mise en cache (colonnes \code{TABLE\_T24.description\_fr} et \code{DOCUMENT.description\_fr})~: consulter une table ne déclenche donc jamais d'appel LLM synchrone, contrairement au chat, où la génération est faite à la volée. Un traitement par lot (\code{translateBatchToFrench}) regroupe plusieurs descriptions dans un seul appel au modèle plutôt que de le solliciter champ par champ, ce qui réduit fortement le temps total de traduction du corpus. Les sept modules actifs sont traités en priorité, afin que leur documentation soit disponible en français dès les premières minutes suivant un import, le reste du corpus (modules non actifs, conservés en base mais non proposés dans le chat) étant traduit progressivement en arrière-plan.
+
+\section{Interface d'administration et gestion des rôles}
+Les deux rôles applicatifs distingués au \S~2.4 se traduisent concrètement par deux niveaux d'interface~:
+\begin{itemize}
+  \item un utilisateur \code{consultant} peut interroger l'assistant, consulter et gérer ses propres conversations (recherche, épinglage, suppression), changer son mot de passe (\code{ChangePasswordComponent}), et demander une réinitialisation de mot de passe par email en cas d'oubli (\code{PasswordResetController}, envoi via Spring Mail)~;
+  \item un \code{superAdmin} dispose en plus d'une interface de gestion des comptes (\code{UsersComponent})~: création de nouveaux comptes avec attribution explicite du rôle, et visibilité sur l'ensemble des conversations de tous les utilisateurs --- utile pour diagnostiquer un problème signalé sans avoir à le reproduire soi-même. Il peut également déclencher manuellement une ré-indexation complète de la documentation (\code{/api/chat/reindex}) ou un rechargement des vecteurs FAISS depuis la base (\code{/api/chat/faiss-backfill}) sans redémarrer le backend.
+\end{itemize}
+Ces opérations sensibles sont protégées côté serveur par l'annotation \code{@PreAuthorize("hasRole('SUPERADMIN')")} de Spring Security, et non par la seule interface~: un consultant ne peut y accéder même en forgeant directement une requête HTTP vers ces points d'entrée.
+
+% ===========================================================================
+\chapter{Démarche qualité et fiabilisation itérative}
+\label{ch:qualite}
+
+Au-delà de la conception initiale, une part importante du stage a consisté à \textbf{tester le système comme un utilisateur réel}, à confronter chaque réponse à la documentation effectivement importée (vérification directe en base via SQL), et à corriger les écarts constatés par un garde-fou déterministe plutôt que par une simple instruction supplémentaire au modèle --- jugée, à l'expérience, insuffisamment fiable seule sur un modèle de cette taille. Quelques exemples représentatifs~:
+
+\begin{bugcard}{Ambiguïté --- homonymie table / colonne}
+\textbf{Constat~:} la question « à quoi sert \code{ACCOUNT}~? » répondait avec la description d'une colonne \code{ACCOUNT} d'une table de cartes sans rapport, au lieu de la table maîtresse des comptes.\\[4pt]
+\textbf{Correction~:} priorité donnée à la correspondance de \emph{nom de table exact}, mais seulement quand ce mot constitue l'essentiel du contenu de la question --- sinon la recherche sémantique normale reste seule juge.
+\end{bugcard}
+
+\begin{bugcard}{Regex --- biais Unicode sur les majuscules accentuées}
+\textbf{Constat~:} une expression régulière insensible à la casse (\code{CASE\_INSENSITIVE}) ne repliait pas nativement, en Java, un « À » majuscule sur un « à » minuscule --- une question commençant par « À quoi sert\dots » (orthographe correcte du français) échappait alors silencieusement à plusieurs détections censées la reconnaître.\\[4pt]
+\textbf{Correction~:} ajout systématique de l'option \code{UNICODE\_CASE} à toutes les expressions concernées.
+\end{bugcard}
+
+\begin{bugcard}{Historique --- contamination entre questions successives}
+\textbf{Constat~:} une nouvelle question, pourtant autonome, répondait parfois encore sur le sujet de l'échange précédent --- la reformulation de requête ancrée sur l'historique l'emportait à tort dès qu'elle obtenait, par coïncidence, un score sémantique légèrement supérieur.\\[4pt]
+\textbf{Correction~:} la version ancrée sur l'historique n'est retenue qu'en cas de correspondance \emph{certaine} (exacte), jamais pour un score simplement meilleur.
+\end{bugcard}
+
+Cette démarche --- reproduire un cas signalé, vérifier la donnée réelle en base plutôt que de supposer, corriger la cause plutôt que le symptôme, revérifier après correction --- a structuré l'essentiel du temps de développement passé sur le moteur de recherche et de génération.
+
+% ===========================================================================
+\chapter{Résultats et démonstration}
+\label{ch:resultats}
+
+\ph{Section à illustrer avec des captures d'écran réelles de l'application~: dialogue guidé de sélection de module, réponse en flux avec sa carte « Voir la source », cas de désambiguïsation entre deux champs, liste complète des tables d'un module.}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Exemples de questions traitées correctement en fin de stage.}
+\begin{tabular}{@{}p{5.5cm}p{7cm}@{}}
+\toprule
+\textbf{Question posée} & \textbf{Comportement observé} \\
+\midrule
+« À quoi sert \code{AC.ACCOUNT}~? » & Reconnaît le préfixe de module comme redondant, répond sur la table \code{ACCOUNT} avec sa description réelle. \\
+« Où trouve-t-on la devise du compte~? » & Présente les deux champs candidats trouvés dans le contexte (\code{CURRENCY} dans \code{ACCOUNT}, \code{ACCT.LIQU.CURRENCY} dans \code{ACCOUNT.CLOSURE}) plutôt que d'en choisir un silencieusement. \\
+« Citez les tables de ce module » & Retourne la liste exhaustive et exacte des tables du module (comparée et validée directement contre la base), avec leur description. \\
+« Quelle table gère les versions d'écran de la Home Page Teller~? » & Retrouve \code{TT.TELLER.HP.VERSIONS} plutôt que la table générique \code{TELLER}. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ===========================================================================
+\chapter*{Conclusion générale et perspectives}
+\addcontentsline{toc}{chapter}{Conclusion générale et perspectives}
+\markboth{Conclusion générale et perspectives}{}
+
+Ce stage a permis de concevoir et de mettre en œuvre, de bout en bout, un assistant conversationnel RAG interrogeant la documentation Temenos~T24 de la BIAT~: import et structuration des fichiers HelpText en base relationnelle, indexation vectorielle multi-périmètres avec FAISS, recherche hybride combinant correspondance exacte, similarité dense et reranking par cross-encoder, reformulation contrôlée des questions de suivi, et génération de réponses en français strictement bornées au contexte retrouvé, vérifiées par des garde-fous déterministes plutôt que par la seule confiance dans le modèle de langage. Le résultat est une interface Angular connectée à une API Spring~Boot sécurisée par JWT, exploitable par les équipes métier sans connaissance préalable de la structure de T24.
+
+Plusieurs pistes d'évolution restent ouvertes~: extension à l'ensemble des modules T24 (au-delà des sept modules actifs, déjà importés mais non encore indexés pour la recherche globale)~; évaluation quantitative de la pertinence du retrieval (jeu de questions de référence, mesure de rappel/précision)~; exploration d'un modèle de génération plus grand ou exécuté sur GPU pour réduire la latence perçue~; et, à plus long terme, une étude de fine-tuning léger si un jeu de données de questions/réponses métier suffisant venait à être constitué.
+
+% ===========================================================================
+\chapter*{Bibliographie et webographie}
+\addcontentsline{toc}{chapter}{Bibliographie et webographie}
+\markboth{Bibliographie et webographie}{}
+\begin{itemize}[leftmargin=1.4em]
+  \item Lewis, P. \emph{et al.}, « Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks », \emph{NeurIPS}, 2020.
+  \item Johnson, J., Douze, M., Jégou, H., « Billion-scale similarity search with GPUs » --- bibliothèque FAISS, Meta AI Research.
+  \item Reimers, N., Gurevych, I., « Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks », \emph{EMNLP}, 2019 --- fondement des modèles \emph{sentence-transformers}.
+  \item Documentation officielle Spring Boot --- \url{https://spring.io/projects/spring-boot}
+  \item Documentation officielle Angular --- \url{https://angular.dev}
+  \item Documentation Ollama --- \url{https://ollama.com}
+  \item Documentation Hugging Face --- modèles \emph{sentence-transformers} et \emph{cross-encoder}
+  \item Documentation Temenos T24 / Transact --- HelpText applicatif (accès interne BIAT)
+\end{itemize}
+
+% ===========================================================================
+\chapter*{Annexes}
+\addcontentsline{toc}{chapter}{Annexes}
+\markboth{Annexes}{}
+
+\section*{A. Glossaire T24}
+\begin{description}[leftmargin=3.4cm, style=nextline]
+  \item[Module] Regroupement fonctionnel de tables, identifié par un code court (ex.\ \code{AC}).
+  \item[Table (fichier T24)] Unité de données T24 correspondant à une application (ex.\ \code{LC.ISSUING.BANK}).
+  \item[Champ] Colonne d'une table, documentée individuellement dans le HelpText.
+  \item[HelpText] Documentation XML source fournie par Temenos pour chaque table.
+\end{description}
+
+\section*{B. Glossaire technique}
+\begin{description}[leftmargin=3.4cm, style=nextline]
+  \item[Embedding] Vecteur numérique représentant le sens d'un texte, produit par un modèle entraîné à cet effet.
+  \item[RAG] \emph{Retrieval-Augmented Generation} --- génération de texte augmentée par un contexte documentaire retrouvé au préalable.
+  \item[Reranking] Réordonnancement d'un lot de résultats de recherche par un modèle plus précis mais plus coûteux (cross-encoder).
+  \item[Query rewriting] Reformulation automatique d'une question pour la rendre autonome avant une recherche documentaire.
+\end{description}
+
+\end{document}

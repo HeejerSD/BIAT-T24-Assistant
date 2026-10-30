@@ -1,0 +1,50 @@
+<div class="mt-page">
+  <div class="container">
+
+    <div class="mt-header">
+      <h1 class="mt-title">Table <span class="highlight">{{ tableName }}</span></h1>
+      <p class="mt-sub" *ngIf="!loading && !error">{{ columns.length }} colonne(s)</p>
+      <button class="ask-btn" (click)="askInChat()">Poser une question sur cette table</button>
+    </div>
+
+    <div class="mt-search" *ngIf="!loading && !error && columns.length > 0">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input
+        class="mt-search-input"
+        type="text"
+        placeholder="Rechercher une colonne..."
+        [(ngModel)]="columnSearch" />
+    </div>
+
+    <div class="mt-loading" *ngIf="loading">Chargement des colonnes...</div>
+    <div class="mt-error" *ngIf="error && !loading">{{ error }}</div>
+
+    <div class="mt-table-wrap" *ngIf="!loading && !error && columns.length > 0">
+      <table class="mt-table">
+        <thead>
+          <tr>
+            <th>Colonne</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of filteredColumns">
+            <td class="mt-col-name">{{ c.columnName }}</td>
+            <td class="mt-col-desc">
+              <span *ngIf="c.description">{{ c.description }}</span>
+              <span class="mt-no-cols" *ngIf="!c.description">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="mt-empty" *ngIf="filteredColumns.length === 0">
+        Aucune colonne ne correspond à "{{ columnSearch }}".
+      </div>
+    </div>
+
+    <div class="mt-empty" *ngIf="!loading && !error && columns.length === 0">
+      Aucune colonne trouvée pour cette table.
+    </div>
+
+  </div>
+</div>

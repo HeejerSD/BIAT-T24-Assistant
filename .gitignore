@@ -1,0 +1,126 @@
+
+# ==========================================
+# 1. SECRETS ET VARIABLES D'ENVIRONNEMENT
+# ==========================================
+.env
+.env.*
+!.env.example
+secrets.json
+credentials.json
+*.pem
+*.key
+
+# Configurations Spring Boot locales ou sensibles
+**/application-local.yml
+**/application-local.yaml
+**/application-local.properties
+/backend/src/main/resources/application.yml
+/backend/src/main/resources/application-prod.yml
+
+# ==========================================
+# 2. DOCUMENTATION CONFIDENTIELLE BIAT / T24
+# ==========================================
+/backend/src/main/resources/DataBIAT/
+
+# ==========================================
+# 3. INDEX VECTORIELS ET DONNÉES DU RAG
+# ==========================================
+/faiss-service/faiss_data/
+/faiss-service/faiss_global_corrompu_sauvegarde/
+
+# ==========================================
+# 4. RÉSULTATS ET DONNÉES DE TESTS RAG
+# ==========================================
+/tests/rag/*.json
+/tests/rag/*.txt
+/tests/rag/*.err
+/tests/rag/*.out
+/tests/rag/battery5/
+/tests/rag/data/
+
+# ==========================================
+# 5. PYTHON
+# ==========================================
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+
+# ==========================================
+# 6. ANGULAR / NODE.JS
+# ==========================================
+node_modules/
+dist/
+.angular/
+.npm/
+
+# ==========================================
+# 7. JAVA / MAVEN / SPRING BOOT
+# ==========================================
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# ==========================================
+# 8. BASES DE DONNÉES ET SAUVEGARDES
+# ==========================================
+*.dmp
+*.dump
+*.bak
+*.backup
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+backups/
+exports/
+database-dumps/
+
+# ==========================================
+# 9. FICHIERS GÉNÉRÉS ET TEMPORAIRES
+# ==========================================
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# 10. IDE ET ÉDITEURS
+# ==========================================
+.idea/
+.vscode/
+*.iml
+
+# ==========================================
+# 11. RAPPORTS ET DOCUMENTS GÉNÉRÉS
+# ==========================================
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.synctex.gz
+*.toc
+
+# ==========================================
+# 12. FICHIERS DE CONFIGURATION LOCALE
+# ==========================================
+application-local.yml
+application-local.yaml
+application-local.properties
+
+# Configuration locale de Claude Code
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# Journaux de compilation
+backend/mvn_output.txt

@@ -1,0 +1,219 @@
+<div class="dash-page">
+  <div class="container">
+
+    <div class="dash-header">
+      <div>
+        <h1 class="dash-title">Dashboard <span class="highlight">Super Admin</span></h1>
+        <p class="dash-sub">Vue d'ensemble de l'utilisation de l'Assistant T24</p>
+      </div>
+      <div class="dash-range">
+        <input type="date" [(ngModel)]="from" (change)="onRangeChange()" [max]="to" />
+        <span>→</span>
+        <input type="date" [(ngModel)]="to" (change)="onRangeChange()" [min]="from" />
+        <button type="button" class="refresh-btn" (click)="load()" [class.spinning]="refreshing" title="Rafraîchir">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="dash-loading" *ngIf="loading">Chargement des statistiques...</div>
+    <div class="dash-error" *ngIf="error && !loading">{{ error }}</div>
+
+    <div class="dash-body" *ngIf="stats && !loading">
+
+      <!-- KPI -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <span class="kpi-icon users">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          <span class="kpi-label">Utilisateurs totaux</span>
+          <span class="kpi-value">{{ stats.totalUsers }}</span>
+          <span class="kpi-delta" [class.up]="stats.totalUsersDelta >= 0" [class.down]="stats.totalUsersDelta < 0">
+            {{ stats.totalUsersDelta >= 0 ? '+' : '' }}{{ stats.totalUsersDelta }} vs période précédente
+          </span>
+        </div>
+
+        <div class="kpi-card">
+          <span class="kpi-icon active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+          </span>
+          <span class="kpi-label">Utilisateurs actifs</span>
+          <span class="kpi-value">{{ stats.activeUsers }}</span>
+          <span class="kpi-delta">{{ stats.activeUsersPct }}% · connectés sur la période</span>
+        </div>
+
+        <div class="kpi-card">
+          <span class="kpi-icon inactive">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </span>
+          <span class="kpi-label">Utilisateurs non actifs</span>
+          <span class="kpi-value">{{ stats.inactiveUsers }}</span>
+          <span class="kpi-delta">Aucune connexion sur la période</span>
+        </div>
+
+        <div class="kpi-card">
+          <span class="kpi-icon questions">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </span>
+          <span class="kpi-label">Nombre total de questions</span>
+          <span class="kpi-value">{{ stats.totalQuestions }}</span>
+          <span class="kpi-delta" [class.up]="stats.totalQuestionsDelta >= 0" [class.down]="stats.totalQuestionsDelta < 0">
+            {{ stats.totalQuestionsDelta >= 0 ? '+' : '' }}{{ stats.totalQuestionsDelta }} vs période précédente
+          </span>
+        </div>
+      </div>
+
+      <!-- Utilisateurs récents / Connectivité / Activité -->
+      <div class="row-3">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Utilisateurs connectés récemment</h2>
+            <a routerLink="/admin/users">Voir tous les utilisateurs</a>
+          </div>
+          <div class="panel-body">
+            <table class="dash-table" *ngIf="stats.recentUsers.length > 0; else noRecentUsers">
+              <thead>
+                <tr><th>Utilisateur</th><th>Rôle</th><th>Statut</th><th>Dernière activité</th></tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let u of stats.recentUsers">
+                  <td class="user-cell">
+                    <span class="avatar">{{ u.username.charAt(0).toUpperCase() }}</span>
+                    {{ u.username }}
+                  </td>
+                  <td>{{ u.role }}</td>
+                  <td>
+                    <span class="status-chip" [class.active]="u.status === 'En ligne'">
+                      <span class="dot"></span>{{ u.status }}
+                    </span>
+                  </td>
+                  <td>{{ formatDateTime(u.lastActivityAt) }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <ng-template #noRecentUsers><p class="empty">Aucune connexion enregistrée.</p></ng-template>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>État de connectivité</h2></div>
+          <div class="donut-wrap">
+            <svg width="90" height="90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#FEB2B2" stroke-width="14"/>
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#38A169" stroke-width="14"
+                      [attr.stroke-dasharray]="donutActiveDasharray" stroke-dashoffset="0"
+                      transform="rotate(-90 50 50)" stroke-linecap="round"/>
+              <text x="50" y="47" text-anchor="middle" class="donut-total">{{ stats.totalUsers }}</text>
+              <text x="50" y="61" text-anchor="middle" class="donut-caption">Utilisateurs</text>
+            </svg>
+            <div class="donut-legend">
+              <span class="legend-item"><span class="swatch" style="background:#38A169"></span>Actifs {{ stats.activeUsers }} ({{ stats.activeUsersPct }}%)</span>
+              <span class="legend-item"><span class="swatch" style="background:#FEB2B2"></span>Non actifs {{ stats.inactiveUsers }} ({{ (100 - stats.activeUsersPct) | number:'1.0-1' }}%)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Activité des utilisateurs</h2></div>
+          <p class="panel-caption">Utilisateurs connectés par jour</p>
+          <div class="activity-chart" *ngIf="stats.dailyActivity.length > 0">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="activity-svg">
+              <defs>
+                <linearGradient id="activityFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#1A4F8A" stop-opacity="0.28"/>
+                  <stop offset="100%" stop-color="#1A4F8A" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <polygon [attr.points]="activityAreaPoints" fill="url(#activityFill)" stroke="none"/>
+              <polyline [attr.points]="activityPoints" fill="none" stroke="#1A4F8A" stroke-width="2" vector-effect="non-scaling-stroke"/>
+              <circle *ngFor="let d of stats.dailyActivity; let i = index"
+                      [attr.cx]="stats.dailyActivity.length > 1 ? (i * (100 / (stats.dailyActivity.length - 1))) : 50"
+                      [attr.cy]="100 - (d.count / activityMax) * 92 - 4"
+                      r="1.6" fill="#1A4F8A">
+                <title>{{ formatShortDate(d.date) }} : {{ d.count }} utilisateur(s)</title>
+              </circle>
+            </svg>
+            <div class="activity-axis">
+              <span *ngFor="let d of stats.dailyActivity; let i = index"
+                    [class.hidden]="i % activityLabelEvery() !== 0">{{ formatShortDate(d.date) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modules / Tables / Champs -->
+      <div class="row-3">
+        <div class="panel">
+          <div class="panel-head"><h2>Modules les plus questionnés</h2></div>
+          <div class="panel-body">
+            <div class="bar-list" *ngIf="stats.topModules.length > 0; else noModules">
+              <div class="bar-row" *ngFor="let m of stats.topModules; let i = index">
+                <span class="bar-rank">{{ i + 1 }}</span>
+                <span class="bar-label">{{ m.label }}</span>
+                <span class="bar-track"><span class="bar-fill" [style.width.%]="m.pct"></span></span>
+                <span class="bar-value">{{ m.count }} ({{ m.pct }}%)</span>
+              </div>
+            </div>
+            <ng-template #noModules><p class="empty">Aucune question sur la période.</p></ng-template>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Tables les plus questionnées</h2></div>
+          <div class="panel-body">
+            <table class="dash-table" *ngIf="stats.topTables.length > 0; else noTables">
+              <thead><tr><th>#</th><th>Table</th><th>Questions</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let t of stats.topTables; let i = index">
+                  <td>{{ i + 1 }}</td><td class="mono">{{ t.label }}</td><td>{{ t.count }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <ng-template #noTables><p class="empty">Aucune question sur la période.</p></ng-template>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Champs les plus questionnés</h2></div>
+          <div class="panel-body">
+            <table class="dash-table" *ngIf="stats.topFields.length > 0; else noFields">
+              <thead><tr><th>#</th><th>Champ</th><th>Questions</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let f of stats.topFields; let i = index">
+                  <td>{{ i + 1 }}</td><td class="mono">{{ f.label }}</td><td>{{ f.count }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <ng-template #noFields><p class="empty">Aucune question sur la période.</p></ng-template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dernières questions -->
+      <div class="panel" style="flex: 0 0 auto; max-height: 190px;">
+        <div class="panel-head">
+          <h2>Dernières questions posées</h2>
+          <a routerLink="/chat">Voir tout l'historique</a>
+        </div>
+        <div class="panel-body">
+          <table class="dash-table" *ngIf="stats.recentQuestions.length > 0; else noQuestions">
+            <thead><tr><th>#</th><th>Question</th><th>Module</th><th>Table</th><th>Utilisateur</th><th>Date</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let q of stats.recentQuestions; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td class="question-cell">{{ q.question }}</td>
+                <td>{{ q.module || '—' }}</td>
+                <td class="mono">{{ q.table || '—' }}</td>
+                <td>{{ q.username || '—' }}</td>
+                <td>{{ formatDateTime(q.date) }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <ng-template #noQuestions><p class="empty">Aucune question sur la période.</p></ng-template>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

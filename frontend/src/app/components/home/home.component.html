@@ -1,0 +1,123 @@
+<div class="home-layout">
+  <aside class="home-sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">Modules T24 <span class="sidebar-count" *ngIf="modules.length">{{ modules.length }}</span></div>
+      <div class="sidebar-search">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input
+          id="module-search-input"
+          class="sidebar-search-input"
+          type="text"
+          placeholder="Rechercher un module..."
+          [(ngModel)]="moduleSearch" />
+      </div>
+      <nav class="module-list">
+        <a class="module-item"
+           *ngFor="let m of filteredModules"
+           [routerLink]="['/modules', m]"
+           routerLinkActive="active">
+          <span class="module-icon">{{ m.substring(0, 2) }}</span>
+          <span class="module-code">{{ m }}</span>
+        </a>
+        <div class="sidebar-empty" *ngIf="modules.length > 0 && filteredModules.length === 0">
+          Aucun module ne correspond à "{{ moduleSearch }}".
+        </div>
+      </nav>
+      <div class="sidebar-empty" *ngIf="modules.length === 0">
+        Aucun module indexé pour l'instant.
+      </div>
+    </div>
+  </aside>
+
+  <div class="home-main">
+
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-text fade-up">
+      <div class="hero-eyebrow">
+        <span class="status-pill" [class.online]="backendOnline" [class.offline]="!backendOnline">
+          <span class="status-dot"></span>
+          {{ backendOnline ? 'En ligne' : 'Hors ligne' }}
+        </span>
+        <span class="status-detail" *ngIf="backendOnline">{{ tablesCount }} tables indexées</span>
+        <button class="reindex-btn" *ngIf="isSuperAdmin" (click)="reindexData()" [disabled]="reindexing">
+          {{ reindexing ? 'Chargement...' : 'Charger les données' }}
+        </button>
+      </div>
+      <h1 class="hero-title">
+        La documentation T24,<br>
+        <span class="highlight">enfin simple à trouver</span>
+      </h1>
+      <p class="hero-sub">
+        Plus besoin de fouiller dans des fichiers XML interminables.
+        Posez votre question en français : l'assistant interroge automatiquement
+        la documentation technique T24 et vous répond en quelques secondes.
+      </p>
+      <div class="hero-actions">
+        <a routerLink="/chat" class="btn-primary">
+          Poser ma première question
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <button type="button" class="btn-outline" (click)="exploreDocs()">Explorer la documentation</button>
+      </div>
+    </div>
+
+    <div class="hero-visual fade-up" style="animation-delay:0.15s">
+      <div class="chat-preview">
+        <div class="cp-header">
+          <div class="cp-dot red"></div>
+          <div class="cp-dot yellow"></div>
+          <div class="cp-dot green"></div>
+          <span class="cp-title">Assistant Documentation T24</span>
+        </div>
+        <div class="cp-body">
+          <div class="cp-msg user">
+            À quoi sert <code>CUSTOMER.ID</code> dans <code>LD.LOANS.MASTER</code> ?
+          </div>
+          <div class="cp-msg bot">
+            <div class="bot-tag">LD.LOANS.MASTER · CUSTOMER.ID</div>
+            Identifiant unique du client titulaire du crédit. Référence la table CUSTOMER.
+            <div class="bot-badges">
+              <span class="badge-man">MAN — Obligatoire</span>
+              <span class="badge-std">Standard T24 ✓</span>
+            </div>
+          </div>
+          <div class="cp-msg user">Quels champs sont obligatoires ?</div>
+          <div class="cp-typing"><span></span><span></span><span></span></div>
+        </div>
+        <div class="cp-input">
+          <span class="cp-placeholder">Posez votre question sur T24...</span>
+          <button>↵</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-bar">
+  <div class="container stats-inner">
+    <div class="stat-item">
+      
+      <div class="stat-num">{{ tablesCount || '—' }}</div>
+      <div class="stat-lbl">Tables T24 indexées</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      
+      <div class="stat-num">{{ modulesCount || '—' }}</div>
+      <div class="stat-lbl">Modules supportés</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+
+      <div class="stat-num">{{ questionsAnswered || '—' }}</div>
+      <div class="stat-lbl">Questions répondues par l'IA</div>
+    </div>
+  </div>
+</section>
+
+  </div>
+</div>
